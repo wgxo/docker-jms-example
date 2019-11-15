@@ -2,4 +2,6 @@ FROM openjdk:8-jdk-alpine
 RUN apk update && apk add expect expect-dev && rm -rf /var/cache/apk/*
 COPY ./target/jms-example-SNAPSHOT.jar ./log4j.properties /
 
-CMD [ "sh", "-c", "unbuffer java -cp .:jms-example-SNAPSHOT.jar example.Consumer Topic | tee output.log" ]
+RUN echo "java -cp .:jms-example-SNAPSHOT.jar example.Consumer Topic" > run.sh && chmod +x run.sh
+
+CMD java -cp .:jms-example-SNAPSHOT.jar example.Consumer Topic
