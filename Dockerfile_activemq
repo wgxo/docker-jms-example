@@ -1,0 +1,19 @@
+FROM openjdk:8-jdk-alpine
+RUN apk update && apk add expect expect-dev tar curl && rm -rf /var/cache/apk/*
+
+ARG ACTIVEMQ_VERSION=5.15.10
+ARG ACTIVEMQ_STORAGE_URL=http://archive.apache.org/dist/activemq
+ARG ACTIVEMQ_TAR=apache-activemq-$ACTIVEMQ_VERSION-bin.tar.gz
+
+# BROCKER (Apache Active MQ)
+RUN \
+    echo "$ACTIVEMQ_STORAGE_URL/$ACTIVEMQ_VERSION/$ACTIVEMQ_TAR" && \
+    curl -LO "$ACTIVEMQ_STORAGE_URL/$ACTIVEMQ_VERSION/$ACTIVEMQ_TAR" && \
+    tar -xzvf $ACTIVEMQ_TAR -C /opt && \
+    ln -s /opt/apache-activemq-$ACTIVEMQ_VERSION/ /opt/activemq 
+
+VOLUME /tmp
+
+EXPOSE 5672
+
+ENTRYPOINT [ "sh", "-c", "unbuffer /opt/activemq/bin/activemq console | tee /tmp/application.log" ]

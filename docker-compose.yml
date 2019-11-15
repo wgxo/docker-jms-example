@@ -1,0 +1,55 @@
+version: "2"
+
+services:
+
+  builder:
+    build:
+      context: .
+      dockerfile: Dockerfile_builder
+    image: jms-builder
+    container_name: jms-builder
+    volumes:
+      - /home/wgarcia/JmsExample:/home/app
+      - /root/.m2
+
+  activemq:
+    build:
+      context: .
+      dockerfile: Dockerfile_activemq
+    image: jms-activemq
+    container_name: jms-activemq
+    ports:
+      - "5672:5672"
+      - "8161:8161"
+      - "61616:61616"
+      - "61613:61613"
+
+  consumer1:
+    build:
+      context: .
+      dockerfile: Dockerfile_consumer
+    image: jms-consumer
+    container_name: jms-consumer1
+    depends_on:
+      - builder
+      - activemq
+
+  consumer2:
+    build:
+      context: .
+      dockerfile: Dockerfile_consumer
+    image: jms-consumer
+    container_name: jms-consumer2
+    depends_on:
+      - builder
+      - activemq
+
+  producer:
+    build:
+      context: .
+      dockerfile: Dockerfile_producer
+    image: jms-producer
+    container_name: jms-producer
+    depends_on:
+      - builder
+      - activemq

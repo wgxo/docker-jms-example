@@ -1,0 +1,5 @@
+FROM maven:3-jdk-8 as builder
+WORKDIR /home/app
+VOLUME /home/app
+VOLUME /root/.m2
+CMD mvn install
